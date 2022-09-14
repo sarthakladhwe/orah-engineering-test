@@ -5,7 +5,7 @@ import { Images } from "assets/images"
 import { Colors } from "shared/styles/colors"
 import { Person, PersonHelper } from "shared/models/person"
 import { RollStateSwitcher } from "staff-app/components/roll-state/roll-state-switcher.component"
-import { RollInput } from "shared/models/roll"
+import { RollInput, RolllStateType } from "shared/models/roll"
 
 interface Props {
   isRollMode?: boolean
@@ -13,6 +13,11 @@ interface Props {
   studentRoll: RollInput
 }
 export const StudentListTile: React.FC<Props> = ({ isRollMode, student, studentRoll }) => {
+
+  const onStateChange = (newState: RolllStateType): void => {
+    console.log("New State: ", newState)
+    // update studentRoll state for current id
+  }
 
   return (
     <S.Container>
@@ -22,7 +27,10 @@ export const StudentListTile: React.FC<Props> = ({ isRollMode, student, studentR
       </S.Content>
       {isRollMode && (
         <S.Roll>
-          <RollStateSwitcher />
+          <RollStateSwitcher 
+            initialState="unmark"
+            onStateChange={onStateChange} 
+          />
         </S.Roll>
       )}
     </S.Container>
