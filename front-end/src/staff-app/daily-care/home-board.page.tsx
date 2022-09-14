@@ -13,8 +13,9 @@ import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
   const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" })
-
   const [students, setStudents] = useState<Person[]>()
+
+  const [isSearchEnabled, setIsSearchEnabled] = useState<boolean>(false)
 
   useEffect(() => {
     void getStudents()
@@ -27,6 +28,8 @@ export const HomeBoardPage: React.FC = () => {
   const onToolbarAction = (action: ToolbarAction) => {
     if (action === "roll") {
       setIsRollMode(true)
+    } else if (action === "search") {
+      setIsSearchEnabled(true)
     }
   }
 
@@ -39,7 +42,10 @@ export const HomeBoardPage: React.FC = () => {
   return (
     <>
       <S.PageContainer>
-        <Toolbar onItemClick={onToolbarAction} />
+        <Toolbar 
+          onItemClick={onToolbarAction}
+          isSearchEnabled={isSearchEnabled}
+        />
 
         {loadState === "loading" && (
           <CenteredContainer>
@@ -66,16 +72,31 @@ export const HomeBoardPage: React.FC = () => {
   )
 }
 
-type ToolbarAction = "roll" | "sort"
+// Toolbar Component
+
+type ToolbarAction = "roll" | "sort" | "search"
+
 interface ToolbarProps {
   onItemClick: (action: ToolbarAction, value?: string) => void
+  isSearchEnabled: boolean
 }
+
 const Toolbar: React.FC<ToolbarProps> = (props) => {
-  const { onItemClick } = props
+  const { onItemClick, isSearchEnabled } = props
+
   return (
     <S.ToolbarContainer>
       <div onClick={() => onItemClick("sort")}>First Name</div>
-      <div>Search</div>
+      <S.SearchContainer>
+        {
+          isSearchEnabled ?
+          <S.SearchInputContainer>
+            <S.Input type="text" ></S.Input>
+
+          </S.SearchInputContainer> :
+          <S.Button onClick={() => onItemClick("search")}>Search</S.Button>
+        }
+      </S.SearchContainer>
       <S.Button onClick={() => onItemClick("roll")}>Start Roll</S.Button>
     </S.ToolbarContainer>
   )
@@ -105,4 +126,13 @@ const S = {
       border-radius: ${BorderRadius.default};
     }
   `,
+  SearchContainer: styled.div`
+    
+  `,
+  SearchInputContainer: styled.div`
+    
+  `,
+  Input: styled.input`
+    
+  `
 }
