@@ -11,14 +11,14 @@ interface Props {
   isRollMode?: boolean
   student: Person
   studentRoll: RollInput
+  updateStudentRoll: (student_id: number, newState: RolllStateType) => void
 }
-export const StudentListTile: React.FC<Props> = ({ isRollMode, student, studentRoll }) => {
+export const StudentListTile: React.FC<Props> = ({ isRollMode, student, studentRoll, updateStudentRoll }) => {
 
   const currentStudentRoll = studentRoll.student_roll_states.filter(s => s.student_id === student.id).pop()?.roll_state
 
   const onStateChange = (newState: RolllStateType): void => {
-    console.log("New State: ", newState)
-    // update studentRoll state for current id
+    updateStudentRoll(student.id, newState)
   }
 
   return (

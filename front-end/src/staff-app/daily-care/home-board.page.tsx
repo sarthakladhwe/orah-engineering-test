@@ -10,7 +10,7 @@ import { useApi } from "shared/hooks/use-api"
 import { StudentListTile } from "staff-app/components/student-list-tile/student-list-tile.component"
 import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
 import { faSortDown, faSortUp, faWindowClose } from "@fortawesome/free-solid-svg-icons"
-import { RollInput } from "shared/models/roll"
+import { RollInput, RolllStateType } from "shared/models/roll"
 
 type SortType = "First Name" | "Last Name"
 
@@ -40,6 +40,29 @@ export const HomeBoardPage: React.FC = () => {
       })
     }
   }, [loadState])
+
+  // Update Student Roll State
+  
+  const updateStudentRoll = (student_id: number, newState: RolllStateType) => {
+    if(studentRoll?.student_roll_states.length) {
+     setStudentRoll(prevStudentRoll => {
+      if(prevStudentRoll?.student_roll_states) {
+        return {
+          student_roll_states: prevStudentRoll?.student_roll_states.map(stud => (
+            stud.student_id === student_id ? 
+            {
+              student_id: stud.student_id,
+              roll_state: newState
+            } :
+            stud
+          ))
+        }
+      }
+     })
+    }
+  }
+
+  console.log(studentRoll)
 
   // Sort Action
 
@@ -124,6 +147,7 @@ export const HomeBoardPage: React.FC = () => {
                 isRollMode={isRollMode} 
                 student={s} 
                 studentRoll={studentRoll}
+                updateStudentRoll={updateStudentRoll}
               />
             ))}
           </>
