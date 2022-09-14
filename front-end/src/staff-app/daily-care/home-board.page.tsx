@@ -32,8 +32,22 @@ export const HomeBoardPage: React.FC = () => {
 
   // Sort Action
 
-  const onSortAction = (value: "ascending" | "descending"): void => {
-    
+  const onSortAction = (action: "ascending" | "descending"): void => {
+    const name = sortType === "First Name" ? "first_name" : "last_name"
+    if(students) {
+      const sorted = [...students].sort((a,b) => {
+        let x = a[name].toLowerCase()
+        let y = b[name].toLowerCase()
+        if (x < y) {
+          return action === "ascending" ? -1 : 1
+        }
+        if (x > y) {
+          return action === "ascending" ? 1 : -1
+        }
+        return 0;
+      })
+      setStudents(sorted)
+    }
   }
 
   // Search Action
@@ -120,7 +134,7 @@ interface ToolbarProps {
   searchText: string
   onSearchAction: (event: React.ChangeEvent<HTMLInputElement>) => void
   sortType: SortType
-  onSortAction: (value: "ascending" | "descending") => void
+  onSortAction: (action: "ascending" | "descending") => void
 }
 
 const Toolbar: React.FC<ToolbarProps> = (props) => {
@@ -130,8 +144,10 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
     <S.ToolbarContainer>
       <S.SortContainer>
         <S.Button onClick={() => onItemClick("sort")}>{sortType}</S.Button>
-        <FontAwesomeIcon icon={faSortUp} onClick={() => onSortAction("descending")} style={{cursor: "pointer"}} />
-        <FontAwesomeIcon icon={faSortDown} onClick={() => onSortAction("ascending")} style={{cursor: "pointer"}} />
+        <S.SortIcons>
+          <FontAwesomeIcon icon={faSortUp} onClick={() => onSortAction("descending")} style={{cursor: "pointer"}} />
+          <FontAwesomeIcon icon={faSortDown} onClick={() => onSortAction("ascending")} style={{cursor: "pointer"}} />
+        </S.SortIcons>
       </S.SortContainer>
       <S.SearchContainer>
         {
@@ -183,6 +199,11 @@ const S = {
     outline: #777;
   `,
   SortContainer: styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  `,
+  SortIcons: styled.div`
     
   `
 }
