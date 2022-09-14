@@ -5,10 +5,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Spacing, BorderRadius, FontWeight } from "shared/styles/styles"
 import { Colors } from "shared/styles/colors"
 import { CenteredContainer } from "shared/components/centered-container/centered-container.component"
-import { Person } from "shared/models/person"
+import { Person, PersonHelper } from "shared/models/person"
 import { useApi } from "shared/hooks/use-api"
 import { StudentListTile } from "staff-app/components/student-list-tile/student-list-tile.component"
 import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
+import { faWindowClose } from "@fortawesome/free-solid-svg-icons"
 
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
@@ -16,6 +17,7 @@ export const HomeBoardPage: React.FC = () => {
   const [students, setStudents] = useState<Person[]>()
 
   const [isSearchEnabled, setIsSearchEnabled] = useState<boolean>(false)
+  const [searchText, setSearchText] = useState<string>("")
 
   useEffect(() => {
     void getStudents()
@@ -25,11 +27,27 @@ export const HomeBoardPage: React.FC = () => {
     if(data && loadState === "loaded") setStudents(data.students)
   }, [loadState])
 
+  // Search Action
+  const onSearchAction = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setSearchText(event.target.value)
+  }
+
+  useEffect(() => {
+    if(isSearchEnabled && data) {
+      const searchedStudents = data.students.filter(student => {
+        if (searchText == "") return student
+        const fullname = PersonHelper.getFullName(student).toLowerCase()
+        return fullname.includes(searchText.toLowerCase())
+      })
+      setStudents(searchedStudents)
+    }
+  }, [searchText])
+
   const onToolbarAction = (action: ToolbarAction) => {
     if (action === "roll") {
       setIsRollMode(true)
     } else if (action === "search") {
-      setIsSearchEnabled(true)
+      setIsSearchEnabled(!isSearchEnabled)
     }
   }
 
@@ -45,6 +63,8 @@ export const HomeBoardPage: React.FC = () => {
         <Toolbar 
           onItemClick={onToolbarAction}
           isSearchEnabled={isSearchEnabled}
+          searchText={searchText}
+          onSearchAction={onSearchAction}
         />
 
         {loadState === "loading" && (
@@ -55,7 +75,7 @@ export const HomeBoardPage: React.FC = () => {
 
         {loadState === "loaded" && data?.students && (
           <>
-            {data.students.map((s) => (
+            {students?.map((s) => (
               <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
             ))}
           </>
@@ -79,10 +99,12 @@ type ToolbarAction = "roll" | "sort" | "search"
 interface ToolbarProps {
   onItemClick: (action: ToolbarAction, value?: string) => void
   isSearchEnabled: boolean
+  searchText: string
+  onSearchAction: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 const Toolbar: React.FC<ToolbarProps> = (props) => {
-  const { onItemClick, isSearchEnabled } = props
+  const { onItemClick, isSearchEnabled, searchText, onSearchAction } = props
 
   return (
     <S.ToolbarContainer>
@@ -91,8 +113,8 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
         {
           isSearchEnabled ?
           <S.SearchInputContainer>
-            <S.Input type="text" ></S.Input>
-
+            <S.Input type="text" placeholder="search..." value={searchText} onChange={onSearchAction} autoFocus />
+            <FontAwesomeIcon onClick={() => onItemClick("search")} icon={faWindowClose} style={{fontSize: "1.4rem", cursor: "pointer"}} />
           </S.SearchInputContainer> :
           <S.Button onClick={() => onItemClick("search")}>Search</S.Button>
         }
@@ -130,9 +152,10 @@ const S = {
     
   `,
   SearchInputContainer: styled.div`
-    
+    display: flex;
+    justify-content: center;
   `,
   Input: styled.input`
-    
+    outline: #777;
   `
 }
