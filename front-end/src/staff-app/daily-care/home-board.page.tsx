@@ -9,7 +9,7 @@ import { Person, PersonHelper } from "shared/models/person"
 import { useApi } from "shared/hooks/use-api"
 import { StudentListTile } from "staff-app/components/student-list-tile/student-list-tile.component"
 import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
-import { faWindowClose } from "@fortawesome/free-solid-svg-icons"
+import { faSortDown, faSortUp, faWindowClose } from "@fortawesome/free-solid-svg-icons"
 
 type SortType = "First Name" | "Last Name"
 
@@ -30,7 +30,14 @@ export const HomeBoardPage: React.FC = () => {
     if(data && loadState === "loaded") setStudents(data.students)
   }, [loadState])
 
+  // Sort Action
+
+  const onSortAction = (value: "ascending" | "descending"): void => {
+    
+  }
+
   // Search Action
+
   const onSearchAction = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setSearchText(event.target.value)
   }
@@ -43,8 +50,12 @@ export const HomeBoardPage: React.FC = () => {
         return fullname.includes(searchText.toLowerCase())
       })
       setStudents(searchedStudents)
+    } else if(!isSearchEnabled && data) {
+      setSearchText("")
+      setStudents(data?.students)
     }
-  }, [searchText])
+  }, [searchText, isSearchEnabled])
+
 
   const onToolbarAction = (action: ToolbarAction) => {
     if (action === "roll") {
@@ -71,6 +82,7 @@ export const HomeBoardPage: React.FC = () => {
           searchText={searchText}
           onSearchAction={onSearchAction}
           sortType={sortType}
+          onSortAction={onSortAction}
         />
 
         {loadState === "loading" && (
@@ -108,15 +120,18 @@ interface ToolbarProps {
   searchText: string
   onSearchAction: (event: React.ChangeEvent<HTMLInputElement>) => void
   sortType: SortType
+  onSortAction: (value: "ascending" | "descending") => void
 }
 
 const Toolbar: React.FC<ToolbarProps> = (props) => {
-  const { onItemClick, isSearchEnabled, searchText, onSearchAction, sortType } = props
+  const { onItemClick, isSearchEnabled, searchText, onSearchAction, sortType, onSortAction } = props
 
   return (
     <S.ToolbarContainer>
       <S.SortContainer>
         <S.Button onClick={() => onItemClick("sort")}>{sortType}</S.Button>
+        <FontAwesomeIcon icon={faSortUp} onClick={() => onSortAction("descending")} style={{cursor: "pointer"}} />
+        <FontAwesomeIcon icon={faSortDown} onClick={() => onSortAction("ascending")} style={{cursor: "pointer"}} />
       </S.SortContainer>
       <S.SearchContainer>
         {
