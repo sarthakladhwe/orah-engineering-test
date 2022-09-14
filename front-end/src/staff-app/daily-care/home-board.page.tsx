@@ -11,6 +11,8 @@ import { StudentListTile } from "staff-app/components/student-list-tile/student-
 import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
 import { faWindowClose } from "@fortawesome/free-solid-svg-icons"
 
+type SortType = "First Name" | "Last Name"
+
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
   const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" })
@@ -18,6 +20,7 @@ export const HomeBoardPage: React.FC = () => {
 
   const [isSearchEnabled, setIsSearchEnabled] = useState<boolean>(false)
   const [searchText, setSearchText] = useState<string>("")
+  const [sortType, setSortType] = useState<SortType>("First Name")
 
   useEffect(() => {
     void getStudents()
@@ -46,6 +49,8 @@ export const HomeBoardPage: React.FC = () => {
   const onToolbarAction = (action: ToolbarAction) => {
     if (action === "roll") {
       setIsRollMode(true)
+    } else if (action === "sort") {
+      setSortType(sortType === "First Name" ? "Last Name" : "First Name")
     } else if (action === "search") {
       setIsSearchEnabled(!isSearchEnabled)
     }
@@ -65,6 +70,7 @@ export const HomeBoardPage: React.FC = () => {
           isSearchEnabled={isSearchEnabled}
           searchText={searchText}
           onSearchAction={onSearchAction}
+          sortType={sortType}
         />
 
         {loadState === "loading" && (
@@ -73,9 +79,9 @@ export const HomeBoardPage: React.FC = () => {
           </CenteredContainer>
         )}
 
-        {loadState === "loaded" && data?.students && (
+        {loadState === "loaded" && data?.students && students && (
           <>
-            {students?.map((s) => (
+            {students.map((s) => (
               <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
             ))}
           </>
@@ -101,14 +107,17 @@ interface ToolbarProps {
   isSearchEnabled: boolean
   searchText: string
   onSearchAction: (event: React.ChangeEvent<HTMLInputElement>) => void
+  sortType: SortType
 }
 
 const Toolbar: React.FC<ToolbarProps> = (props) => {
-  const { onItemClick, isSearchEnabled, searchText, onSearchAction } = props
+  const { onItemClick, isSearchEnabled, searchText, onSearchAction, sortType } = props
 
   return (
     <S.ToolbarContainer>
-      <div onClick={() => onItemClick("sort")}>First Name</div>
+      <S.SortContainer>
+        <S.Button onClick={() => onItemClick("sort")}>{sortType}</S.Button>
+      </S.SortContainer>
       <S.SearchContainer>
         {
           isSearchEnabled ?
@@ -157,5 +166,8 @@ const S = {
   `,
   Input: styled.input`
     outline: #777;
+  `,
+  SortContainer: styled.div`
+    
   `
 }
