@@ -1,8 +1,9 @@
-import React from "react"
+import React, {useContext} from "react"
 import styled from "styled-components"
 import Button from "@material-ui/core/Button"
 import { BorderRadius, Spacing } from "shared/styles/styles"
 import { RollStateList } from "staff-app/components/roll-state/roll-state-list.component"
+import {AppContext} from "../../app"
 
 export type ActiveRollAction = "filter" | "exit"
 interface Props {
@@ -12,6 +13,10 @@ interface Props {
 
 export const ActiveRollOverlay: React.FC<Props> = (props) => {
   const { isActive, onItemClick } = props
+  
+  const contextt = useContext(AppContext)
+
+  console.log(contextt)
 
   return (
     <S.Overlay isActive={isActive}>
