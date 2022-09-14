@@ -14,9 +14,15 @@ export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
   const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" })
 
+  const [students, setStudents] = useState<Person[]>()
+
   useEffect(() => {
     void getStudents()
   }, [getStudents])
+
+  useEffect(() => {
+    if(data && loadState === "loaded") setStudents(data.students)
+  }, [loadState])
 
   const onToolbarAction = (action: ToolbarAction) => {
     if (action === "roll") {
