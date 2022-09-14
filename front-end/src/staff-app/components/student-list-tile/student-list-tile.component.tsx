@@ -14,6 +14,8 @@ interface Props {
 }
 export const StudentListTile: React.FC<Props> = ({ isRollMode, student, studentRoll }) => {
 
+  const currentStudentRoll = studentRoll.student_roll_states.filter(s => s.student_id === student.id).pop()?.roll_state
+
   const onStateChange = (newState: RolllStateType): void => {
     console.log("New State: ", newState)
     // update studentRoll state for current id
@@ -28,7 +30,7 @@ export const StudentListTile: React.FC<Props> = ({ isRollMode, student, studentR
       {isRollMode && (
         <S.Roll>
           <RollStateSwitcher 
-            initialState="unmark"
+            initialState={currentStudentRoll}
             onStateChange={onStateChange} 
           />
         </S.Roll>
