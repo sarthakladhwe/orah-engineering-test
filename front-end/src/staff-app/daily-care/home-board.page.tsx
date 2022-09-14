@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import styled from "styled-components"
 import Button from "@material-ui/core/ButtonBase"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -11,15 +11,21 @@ import { StudentListTile } from "staff-app/components/student-list-tile/student-
 import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
 import { faSortDown, faSortUp, faWindowClose } from "@fortawesome/free-solid-svg-icons"
 import { RollInput, RolllStateType } from "shared/models/roll"
+import { StudentContext, StudentContextInterface } from "../../staff-app/context/studentContext"
 
 type SortType = "First Name" | "Last Name"
 
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
-  const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" })
 
-  const [students, setStudents] = useState<Person[]>()
-  const [studentRoll, setStudentRoll] = useState<RollInput>()
+  //const studentDataContext = useContext(StudentContext)
+
+  const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" }) //context
+
+  const [students, setStudents] = useState<Person[]>()  //context
+  const [studentRoll, setStudentRoll] = useState<RollInput>() //context
+
+  //console.log("student data Context", studentDataContext)
 
   const [isSearchEnabled, setIsSearchEnabled] = useState<boolean>(false)
   const [searchText, setSearchText] = useState<string>("")
@@ -42,7 +48,7 @@ export const HomeBoardPage: React.FC = () => {
   }, [loadState])
 
   // Update Student Roll State
-  
+
   const updateStudentRoll = (student_id: number, newState: RolllStateType) => {
     if(studentRoll?.student_roll_states.length) {
      setStudentRoll(prevStudentRoll => {
