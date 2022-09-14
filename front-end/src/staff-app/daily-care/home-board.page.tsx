@@ -10,13 +10,16 @@ import { useApi } from "shared/hooks/use-api"
 import { StudentListTile } from "staff-app/components/student-list-tile/student-list-tile.component"
 import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
 import { faSortDown, faSortUp, faWindowClose } from "@fortawesome/free-solid-svg-icons"
+import { RollInput } from "shared/models/roll"
 
 type SortType = "First Name" | "Last Name"
 
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
   const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" })
+
   const [students, setStudents] = useState<Person[]>()
+  const [studentRoll, setStudentRoll] = useState<RollInput>()
 
   const [isSearchEnabled, setIsSearchEnabled] = useState<boolean>(false)
   const [searchText, setSearchText] = useState<string>("")
@@ -27,7 +30,15 @@ export const HomeBoardPage: React.FC = () => {
   }, [getStudents])
 
   useEffect(() => {
-    if(data && loadState === "loaded") setStudents(data.students)
+    if(data && loadState === "loaded") {
+      setStudents(data.students)
+      setStudentRoll({
+        student_roll_states: data.students.map(s => ({
+          student_id: s.id,
+          roll_state: "unmark"
+        }))
+      })
+    }
   }, [loadState])
 
   // Sort Action
@@ -105,10 +116,15 @@ export const HomeBoardPage: React.FC = () => {
           </CenteredContainer>
         )}
 
-        {loadState === "loaded" && data?.students && students && (
+        {loadState === "loaded" && data?.students && students && studentRoll && (
           <>
             {students.map((s) => (
-              <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
+              <StudentListTile 
+                key={s.id} 
+                isRollMode={isRollMode} 
+                student={s} 
+                studentRoll={studentRoll}
+              />
             ))}
           </>
         )}
