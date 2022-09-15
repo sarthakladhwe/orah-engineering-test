@@ -4,8 +4,12 @@ import Button from "@material-ui/core/Button"
 import { BorderRadius, Spacing } from "shared/styles/styles"
 import { RollStateList } from "staff-app/components/roll-state/roll-state-list.component"
 import { StudentContext, StudentContextInterface } from "staff-app/context/studentContext"
+import { RollInput } from "shared/models/roll"
 
 export type ActiveRollAction = "filter" | "exit"
+
+type filterType = "present" | "late" | "absent"
+
 interface Props {
   isActive: boolean
   onItemClick: (action: ActiveRollAction, value?: string) => void
@@ -14,21 +18,29 @@ interface Props {
 export const ActiveRollOverlay: React.FC<Props> = (props) => {
   const { isActive, onItemClick } = props
   
-  const studentContextValue = useContext(StudentContext)
+  const studentContextData = useContext(StudentContext)
 
-  console.log("context: ",studentContextValue)
+  const studentRoll = studentContextData && studentContextData.studentRoll
+  const allStudents = studentRoll ? studentRoll.student_roll_states.length : 0
 
-  return (
+  console.log("context: ", studentContextData)
+
+  const checkRollCount = (value: filterType): number => {
+    const filteredRolls = studentRoll?.student_roll_states?.filter(student => student.roll_state === value)
+    return filteredRolls ? filteredRolls?.length : 0
+  }
+
+  return ( 
     <S.Overlay isActive={isActive}>
       <S.Content>
         <div>Class Attendance</div>
         <div>
           <RollStateList
             stateList={[
-              { type: "all", count: 0 },
-              { type: "present", count: 0 },
-              { type: "late", count: 0 },
-              { type: "absent", count: 0 },
+              { type: "all", count: allStudents },
+              { type: "present", count: checkRollCount("present") },
+              { type: "late", count: checkRollCount("late") },
+              { type: "absent", count: checkRollCount("absent") },
             ]}
           />
           <div style={{ marginTop: Spacing.u6 }}>
