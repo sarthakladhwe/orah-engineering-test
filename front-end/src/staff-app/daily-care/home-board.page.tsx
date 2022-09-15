@@ -8,14 +8,19 @@ import { CenteredContainer } from "shared/components/centered-container/centered
 import { StudentListTile } from "staff-app/components/student-list-tile/student-list-tile.component"
 import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
 import { faSortDown, faSortUp, faWindowClose } from "@fortawesome/free-solid-svg-icons"
+import { useApi } from "shared/hooks/use-api"
 import { StudentContext, StudentContextInterface } from "../../staff-app/context/studentContext"
 
 type SortType = "First Name" | "Last Name"
 
 export const HomeBoardPage: React.FC = () => {
+
+  const [saveRoll, rollData, rollLoadState] = useApi<{}>({ url: "save-roll" })
+
   const studentDataContext = useContext<StudentContextInterface | null>(StudentContext)
   const loadState = studentDataContext && studentDataContext.loadState
   const students = studentDataContext && studentDataContext.students
+  const studentRoll = studentDataContext && studentDataContext.studentRoll
   const [isRollMode, setIsRollMode] = useState(false)
   const [isSearchEnabled, setIsSearchEnabled] = useState<boolean>(false)
   const [sortType, setSortType] = useState<SortType>("First Name")
@@ -33,6 +38,9 @@ export const HomeBoardPage: React.FC = () => {
   const onActiveRollAction = (action: ActiveRollAction) => {
     if (action === "exit") {
       setIsRollMode(false)
+    } else if (action === "filter" && studentRoll) {
+      setIsRollMode(false)
+      saveRoll(studentRoll)
     }
   }
 
@@ -124,13 +132,8 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
         {
           isSearchEnabled ?
           <S.SearchInputContainer>
-            {
-              onInputChange &&
-              <>
-                <S.Input type="text" placeholder="search..." value={searchText} onChange={onInputChange} autoFocus />
-                <FontAwesomeIcon onClick={() => onItemClick("search")} icon={faWindowClose} style={{fontSize: "1.4rem", cursor: "pointer"}} />
-              </>
-            }
+            <S.Input type="text" placeholder="search..." value={searchText} onChange={onInputChange} autoFocus />
+            <FontAwesomeIcon onClick={() => onItemClick("search")} icon={faWindowClose} style={{fontSize: "1.4rem", cursor: "pointer"}} />
           </S.SearchInputContainer> :
           <S.Button onClick={() => onItemClick("search")}>Search</S.Button>
         }
@@ -165,7 +168,6 @@ const S = {
     }
   `,
   SearchContainer: styled.div`
-    
   `,
   SearchInputContainer: styled.div`
     display: flex;
