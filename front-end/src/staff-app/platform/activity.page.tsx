@@ -19,9 +19,6 @@ export const ActivityPage: React.FC = () => {
   }, [getRolls])
 
   console.log(rollData)
-  let dateString
-  if(rollData) dateString = rollData.activity[0].entity.completed_at
-  if(dateString) console.log("date", new Date(dateString).toLo)
 
   const checkRollCount = (value: filterType, studentRolls: {student_id: number, roll_state: string}[]): number => {
     const filteredRolls = studentRolls.filter(student => student.roll_state === value)
