@@ -1,11 +1,12 @@
 import React, {useState, useEffect, createContext} from 'react'
 import { useApi } from 'shared/hooks/use-api'
 import { Person, PersonHelper } from "shared/models/person"
-import { RollInput } from 'shared/models/roll'
+import { RollInput, RolllStateType } from 'shared/models/roll'
 
 export interface StudentContextInterface {
-    students: Person[],
-    studentRoll: RollInput
+    //students: Person[],
+    studentRoll: RollInput,
+    updateStudentRoll: (student_id: number, newState: RolllStateType) => void
 }
 
 const StudentContext = createContext<StudentContextInterface | null>(null)
@@ -40,14 +41,34 @@ const StudentContextProvider = (props: Props) => {
     useEffect(() => {
         if(students && studentRoll) {
             setStudentDataContext({
-                students,
-                studentRoll
+                //students,
+                studentRoll,
+                updateStudentRoll
             })
         }
     }, [students, studentRoll])
 
-    console.log("context students", students)
-    console.log("context student roll", studentRoll)
+    const updateStudentRoll = (student_id: number, newState: RolllStateType) => {
+        if(studentRoll?.student_roll_states.length) {
+            setStudentRoll(prevStudentRoll => {
+                if(prevStudentRoll?.student_roll_states) {
+                    return {
+                        student_roll_states: prevStudentRoll?.student_roll_states.map(stud => (
+                        stud.student_id === student_id ? 
+                        {
+                            student_id: stud.student_id,
+                            roll_state: newState
+                        } :
+                        stud
+                        ))
+                    }
+                }
+            })
+        }
+    }
+
+    // console.log("context students", students)
+    // console.log("context student roll", studentRoll)
 
   return (
     <StudentContext.Provider value={studentDataContext}>

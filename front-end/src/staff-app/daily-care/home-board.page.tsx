@@ -151,9 +151,7 @@ export const HomeBoardPage: React.FC = () => {
               <StudentListTile 
                 key={s.id} 
                 isRollMode={isRollMode} 
-                student={s} 
-                studentRoll={studentRoll}
-                updateStudentRoll={updateStudentRoll}
+                student={s}
               />
             ))}
           </>

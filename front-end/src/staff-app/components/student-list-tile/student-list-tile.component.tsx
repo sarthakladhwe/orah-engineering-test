@@ -1,24 +1,29 @@
-import React from "react"
+import React, {useContext} from "react"
 import styled from "styled-components"
 import { Spacing, BorderRadius, FontWeight } from "shared/styles/styles"
 import { Images } from "assets/images"
 import { Colors } from "shared/styles/colors"
 import { Person, PersonHelper } from "shared/models/person"
 import { RollStateSwitcher } from "staff-app/components/roll-state/roll-state-switcher.component"
-import { RollInput, RolllStateType } from "shared/models/roll"
+import { RolllStateType } from "shared/models/roll"
+import { StudentContext, StudentContextInterface } from "staff-app/context/studentContext"
 
 interface Props {
   isRollMode?: boolean
   student: Person
-  studentRoll: RollInput
-  updateStudentRoll: (student_id: number, newState: RolllStateType) => void
 }
-export const StudentListTile: React.FC<Props> = ({ isRollMode, student, studentRoll, updateStudentRoll }) => {
 
-  const currentStudentRoll = studentRoll.student_roll_states.filter(s => s.student_id === student.id).pop()?.roll_state
+export const StudentListTile: React.FC<Props> = ({ isRollMode, student }) => {
+
+  const StudentDataContext = useContext<StudentContextInterface | null>(StudentContext)
+  
+  const studentRoll = StudentDataContext && StudentDataContext.studentRoll
+  const updateStudentRoll = StudentDataContext && StudentDataContext.updateStudentRoll
+
+  const currentStudentRoll = studentRoll?.student_roll_states.filter(s => s.student_id === student.id).pop()?.roll_state
 
   const onStateChange = (newState: RolllStateType): void => {
-    updateStudentRoll(student.id, newState)
+    if(updateStudentRoll) updateStudentRoll(student.id, newState)
   }
 
   return (
