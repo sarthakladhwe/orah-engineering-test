@@ -4,7 +4,6 @@ import Button from "@material-ui/core/Button"
 import { BorderRadius, Spacing } from "shared/styles/styles"
 import { RollStateList } from "staff-app/components/roll-state/roll-state-list.component"
 import { StudentContext, StudentContextInterface } from "staff-app/context/studentContext"
-import { RollInput } from "shared/models/roll"
 
 export type ActiveRollAction = "filter" | "exit"
 

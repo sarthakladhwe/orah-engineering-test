@@ -6,17 +6,7 @@ import { HomeBoardPage } from "staff-app/daily-care/home-board.page"
 import { ActivityPage } from "staff-app/platform/activity.page"
 import {StudentContextProvider} from "../staff-app/context/studentContext"
 
-// interface IAppContext {
-//   name: string
-// }
-
-//export const AppContext = createContext<IAppContext | null>(null)
-
 function App() {
-
-  // const contextValue = {
-  //   name: "something"
-  // }
 
   return (
     <StudentContextProvider>
