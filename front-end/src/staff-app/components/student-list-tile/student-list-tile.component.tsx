@@ -16,8 +16,9 @@ interface Props {
 export const StudentListTile: React.FC<Props> = ({ isRollMode, student }) => {
 
   const studentContextData = useContext<StudentContextInterface | null>(StudentContext)
-  const studentRoll = studentContextData && studentContextData.studentRoll
-  const updateStudentRoll = studentContextData && studentContextData.updateStudentRoll
+
+  if(!studentContextData) return null
+  const {studentRoll, updateStudentRoll} = studentContextData
 
   const currentStudentRoll = studentRoll?.student_roll_states.filter(s => s.student_id === student.id).pop()?.roll_state
 

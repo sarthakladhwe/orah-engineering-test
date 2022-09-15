@@ -15,16 +15,15 @@ type SortType = "First Name" | "Last Name"
 
 export const HomeBoardPage: React.FC = () => {
 
-  const [saveRoll, rollData, rollLoadState] = useApi<{}>({ url: "save-roll" })
-
   const studentDataContext = useContext<StudentContextInterface | null>(StudentContext)
-  const loadState = studentDataContext && studentDataContext.loadState
-  const students = studentDataContext && studentDataContext.students
-  const studentRoll = studentDataContext && studentDataContext.studentRoll
-  const resetStudents = studentDataContext && studentDataContext.resetStudents
+
+  const [saveRoll, rollData, rollLoadState] = useApi<{}>({ url: "save-roll" })
   const [isRollMode, setIsRollMode] = useState(false)
   const [isSearchEnabled, setIsSearchEnabled] = useState<boolean>(false)
   const [sortType, setSortType] = useState<SortType>("First Name")
+
+  if (!studentDataContext) return null;
+  const { loadState, students, studentRoll, resetStudents } = studentDataContext;
 
   const onToolbarAction = (action: ToolbarAction) => {
     if (action === "roll") {
