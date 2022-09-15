@@ -2,11 +2,13 @@ import React, {useState, useEffect, createContext} from 'react'
 import { useApi } from 'shared/hooks/use-api'
 import { Person, PersonHelper } from "shared/models/person"
 import { RollInput, RolllStateType } from 'shared/models/roll'
+import { ItemType } from 'staff-app/components/roll-state/roll-state-list.component'
 
 export interface StudentContextInterface {
     //students: Person[],
     studentRoll: RollInput,
     updateStudentRoll: (student_id: number, newState: RolllStateType) => void
+    onFilterRollType: (type: ItemType) => void
 }
 
 const StudentContext = createContext<StudentContextInterface | null>(null)
@@ -43,10 +45,14 @@ const StudentContextProvider = (props: Props) => {
             setStudentDataContext({
                 //students,
                 studentRoll,
-                updateStudentRoll
+                updateStudentRoll,
+                onFilterRollType
             })
         }
     }, [students, studentRoll])
+
+
+// Student Roll Functionality
 
     const updateStudentRoll = (student_id: number, newState: RolllStateType) => {
         if(studentRoll?.student_roll_states.length) {
@@ -67,8 +73,17 @@ const StudentContextProvider = (props: Props) => {
         }
     }
 
-    // console.log("context students", students)
-    // console.log("context student roll", studentRoll)
+    const onFilterRollType = (type: ItemType) => {
+        if (type === "all") {
+            setStudents(data?.students)
+        } else {
+            const rollTypeStudents = studentRoll?.student_roll_states?.filter(student => student.roll_state === type)
+            const filteredStudents = data?.students.filter(student => {
+                return rollTypeStudents?.filter(stud => stud.student_id === student.id).length ? true : false
+            })
+            setStudents(filteredStudents)
+        }
+    }
 
   return (
     <StudentContext.Provider value={studentDataContext}>

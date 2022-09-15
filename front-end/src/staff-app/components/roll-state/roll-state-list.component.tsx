@@ -1,19 +1,25 @@
-import React from "react"
+import React, {useContext} from "react"
 import styled from "styled-components"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { RollStateIcon } from "staff-app/components/roll-state/roll-state-icon.component"
 import { Spacing, FontWeight } from "shared/styles/styles"
 import { RolllStateType } from "shared/models/roll"
+import { StudentContext, StudentContextInterface } from "staff-app/context/studentContext"
 
 interface Props {
   stateList: StateList[]
-  onItemClick?: (type: ItemType) => void
   size?: number
 }
-export const RollStateList: React.FC<Props> = ({ stateList, size = 14, onItemClick }) => {
+
+export const RollStateList: React.FC<Props> = ({ stateList, size = 14 }) => {
+
+  const studentContextData = useContext<StudentContextInterface | null>(StudentContext)
+
+  const onFilterRollType = studentContextData && studentContextData.onFilterRollType
+
   const onClick = (type: ItemType) => {
-    if (onItemClick) {
-      onItemClick(type)
+    if (onFilterRollType) {
+      onFilterRollType(type)
     }
   }
 
@@ -62,4 +68,4 @@ interface StateList {
   count: number
 }
 
-type ItemType = RolllStateType | "all"
+export type ItemType = RolllStateType | "all"
