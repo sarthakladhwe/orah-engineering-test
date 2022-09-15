@@ -9,16 +9,20 @@ import { StudentContext, StudentContextInterface } from "staff-app/context/stude
 interface Props {
   stateList: StateList[]
   size?: number
+  activityId?: number
+  selectedRollType?: (value: ItemType, activity_id: number) => void
 }
 
-export const RollStateList: React.FC<Props> = ({ stateList, size = 14 }) => {
+export const RollStateList: React.FC<Props> = ({ stateList, size = 14, activityId, selectedRollType }) => {
 
   const studentContextData = useContext<StudentContextInterface | null>(StudentContext)
 
   const onFilterRollType = studentContextData && studentContextData.onFilterRollType
 
   const onClick = (type: ItemType) => {
-    if (onFilterRollType) {
+    if (selectedRollType && activityId) {
+      selectedRollType(type, activityId)
+    } else if (onFilterRollType) {
       onFilterRollType(type)
     }
   }
