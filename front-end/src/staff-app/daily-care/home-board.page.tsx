@@ -21,6 +21,7 @@ export const HomeBoardPage: React.FC = () => {
   const loadState = studentDataContext && studentDataContext.loadState
   const students = studentDataContext && studentDataContext.students
   const studentRoll = studentDataContext && studentDataContext.studentRoll
+  const resetStudents = studentDataContext && studentDataContext.resetStudents
   const [isRollMode, setIsRollMode] = useState(false)
   const [isSearchEnabled, setIsSearchEnabled] = useState<boolean>(false)
   const [sortType, setSortType] = useState<SortType>("First Name")
@@ -36,11 +37,13 @@ export const HomeBoardPage: React.FC = () => {
   }
 
   const onActiveRollAction = (action: ActiveRollAction) => {
-    if (action === "exit") {
+    if (action === "exit" && resetStudents) {
       setIsRollMode(false)
-    } else if (action === "filter" && studentRoll) {
+      resetStudents()
+    } else if (action === "filter" && studentRoll && resetStudents) {
       setIsRollMode(false)
       saveRoll(studentRoll)
+      resetStudents()
     }
   }
 

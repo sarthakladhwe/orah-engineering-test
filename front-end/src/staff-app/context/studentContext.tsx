@@ -11,6 +11,7 @@ export interface StudentContextInterface {
     students: Person[],
     loadState: LoadState,
     studentRoll: RollInput,
+    resetStudents: () => void
     onSortAction: (action: "ascending" | "descending", sortType: SortType) => void,
     onSearchAction: (value: string, isEnabled: boolean) => void,
     updateStudentRoll: (student_id: number, newState: RolllStateType) => void,
@@ -31,7 +32,7 @@ const StudentContextProvider = (props: Props) => {
     const [studentDataContext, setStudentDataContext] = useState<StudentContextInterface | null>(null)
 
     useEffect(() => {
-    void getStudents()
+        void getStudents()
     }, [getStudents])
     
     useEffect(() => {
@@ -52,6 +53,7 @@ const StudentContextProvider = (props: Props) => {
                 students,
                 loadState,
                 studentRoll,
+                resetStudents,
                 onSortAction,
                 onSearchAction,
                 updateStudentRoll,
@@ -59,6 +61,13 @@ const StudentContextProvider = (props: Props) => {
             })
         }
     }, [students, studentRoll, loadState])
+
+
+    const resetStudents = () => {
+        if(data && loadState === "loaded") {
+            setStudents(data.students)
+        }
+    }
 
 // Sort Action
 
