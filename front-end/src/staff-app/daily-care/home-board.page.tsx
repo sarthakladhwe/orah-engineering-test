@@ -5,77 +5,20 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Spacing, BorderRadius, FontWeight } from "shared/styles/styles"
 import { Colors } from "shared/styles/colors"
 import { CenteredContainer } from "shared/components/centered-container/centered-container.component"
-import { Person, PersonHelper } from "shared/models/person"
-import { useApi } from "shared/hooks/use-api"
 import { StudentListTile } from "staff-app/components/student-list-tile/student-list-tile.component"
 import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
 import { faSortDown, faSortUp, faWindowClose } from "@fortawesome/free-solid-svg-icons"
-import { RollInput, RolllStateType } from "shared/models/roll"
 import { StudentContext, StudentContextInterface } from "../../staff-app/context/studentContext"
 
 type SortType = "First Name" | "Last Name"
 
 export const HomeBoardPage: React.FC = () => {
+  const studentDataContext = useContext<StudentContextInterface | null>(StudentContext)
+  const loadState = studentDataContext && studentDataContext.loadState
+  const students = studentDataContext && studentDataContext.students
   const [isRollMode, setIsRollMode] = useState(false)
-
-  //const studentDataContext = useContext(StudentContext)
-
-  const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" }) //context
-
-  const [students, setStudents] = useState<Person[]>()  //context
-
-  //console.log("student data Context", studentDataContext)
-
   const [isSearchEnabled, setIsSearchEnabled] = useState<boolean>(false)
-  const [searchText, setSearchText] = useState<string>("")
   const [sortType, setSortType] = useState<SortType>("First Name")
-
-  useEffect(() => {
-    void getStudents()
-  }, [getStudents])
-
-  useEffect(() => {
-    if(data && loadState === "loaded") {
-      setStudents(data.students)
-    }
-  }, [loadState])
-
-  const onSortAction = (action: "ascending" | "descending"): void => {
-    const name = sortType === "First Name" ? "first_name" : "last_name"
-    if(students) {
-      const sorted = [...students].sort((a,b) => {
-        let x = a[name].toLowerCase()
-        let y = b[name].toLowerCase()
-        if (x < y) {
-          return action === "ascending" ? -1 : 1
-        }
-        if (x > y) {
-          return action === "ascending" ? 1 : -1
-        }
-        return 0;
-      })
-      setStudents(sorted)
-    }
-  }
-  
-  const onSearchAction = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    setSearchText(event.target.value)
-  }
-
-  useEffect(() => {
-    if(isSearchEnabled && data) {
-      const searchedStudents = data.students.filter(student => {
-        if (searchText == "") return student
-        const fullname = PersonHelper.getFullName(student).toLowerCase()
-        return fullname.includes(searchText.toLowerCase())
-      })
-      setStudents(searchedStudents)
-    } else if(!isSearchEnabled && data) {
-      setSearchText("")
-      setStudents(data?.students)
-    }
-  }, [searchText, isSearchEnabled])
-
 
   const onToolbarAction = (action: ToolbarAction) => {
     if (action === "roll") {
@@ -99,10 +42,7 @@ export const HomeBoardPage: React.FC = () => {
         <Toolbar 
           onItemClick={onToolbarAction}
           isSearchEnabled={isSearchEnabled}
-          searchText={searchText}
-          onSearchAction={onSearchAction}
           sortType={sortType}
-          onSortAction={onSortAction}
         />
 
         {loadState === "loading" && (
@@ -111,7 +51,7 @@ export const HomeBoardPage: React.FC = () => {
           </CenteredContainer>
         )}
 
-        {loadState === "loaded" && data?.students && students && (
+        {loadState === "loaded" && students && (
           <>
             {students.map((s) => (
               <StudentListTile 
@@ -141,30 +81,56 @@ type ToolbarAction = "roll" | "sort" | "search"
 interface ToolbarProps {
   onItemClick: (action: ToolbarAction, value?: string) => void
   isSearchEnabled: boolean
-  searchText: string
-  onSearchAction: (event: React.ChangeEvent<HTMLInputElement>) => void
   sortType: SortType
-  onSortAction: (action: "ascending" | "descending") => void
 }
 
 const Toolbar: React.FC<ToolbarProps> = (props) => {
-  const { onItemClick, isSearchEnabled, searchText, onSearchAction, sortType, onSortAction } = props
+  const { onItemClick, isSearchEnabled, sortType } = props
+  
+  const studentDataContext = useContext<StudentContextInterface | null>(StudentContext)
+  const onSortAction = studentDataContext && studentDataContext.onSortAction
+  const onSearchAction = studentDataContext && studentDataContext.onSearchAction
+  
+  const [searchText, setSearchText] = useState<string>("")
+
+  const onInputChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setSearchText(event.target.value)
+  }
+
+  useEffect(() => {
+    if(isSearchEnabled && onSearchAction) {
+      onSearchAction(searchText, true)
+    } else if(!isSearchEnabled && onSearchAction) {
+      setSearchText("")
+      onSearchAction(searchText, false)
+    }
+  }, [searchText, isSearchEnabled])
 
   return (
     <S.ToolbarContainer>
       <S.SortContainer>
         <S.Button onClick={() => onItemClick("sort")}>{sortType}</S.Button>
         <S.SortIcons>
-          <FontAwesomeIcon icon={faSortUp} onClick={() => onSortAction("descending")} style={{cursor: "pointer"}} />
-          <FontAwesomeIcon icon={faSortDown} onClick={() => onSortAction("ascending")} style={{cursor: "pointer"}} />
+          {
+            onSortAction &&
+            <>
+              <FontAwesomeIcon icon={faSortUp} onClick={() => onSortAction("descending", sortType)} style={{cursor: "pointer"}} />
+              <FontAwesomeIcon icon={faSortDown} onClick={() => onSortAction("ascending", sortType)} style={{cursor: "pointer"}} />
+            </>
+          }
         </S.SortIcons>
       </S.SortContainer>
       <S.SearchContainer>
         {
           isSearchEnabled ?
           <S.SearchInputContainer>
-            <S.Input type="text" placeholder="search..." value={searchText} onChange={onSearchAction} autoFocus />
-            <FontAwesomeIcon onClick={() => onItemClick("search")} icon={faWindowClose} style={{fontSize: "1.4rem", cursor: "pointer"}} />
+            {
+              onInputChange &&
+              <>
+                <S.Input type="text" placeholder="search..." value={searchText} onChange={onInputChange} autoFocus />
+                <FontAwesomeIcon onClick={() => onItemClick("search")} icon={faWindowClose} style={{fontSize: "1.4rem", cursor: "pointer"}} />
+              </>
+            }
           </S.SearchInputContainer> :
           <S.Button onClick={() => onItemClick("search")}>Search</S.Button>
         }

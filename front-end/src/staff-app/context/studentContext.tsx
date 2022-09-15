@@ -3,11 +3,17 @@ import { useApi } from 'shared/hooks/use-api'
 import { Person, PersonHelper } from "shared/models/person"
 import { RollInput, RolllStateType } from 'shared/models/roll'
 import { ItemType } from 'staff-app/components/roll-state/roll-state-list.component'
+import { LoadState } from "../../shared/hooks/use-api"
+
+type SortType = "First Name" | "Last Name"
 
 export interface StudentContextInterface {
-    //students: Person[],
+    students: Person[],
+    loadState: LoadState,
     studentRoll: RollInput,
-    updateStudentRoll: (student_id: number, newState: RolllStateType) => void
+    onSortAction: (action: "ascending" | "descending", sortType: SortType) => void,
+    onSearchAction: (value: string, isEnabled: boolean) => void,
+    updateStudentRoll: (student_id: number, newState: RolllStateType) => void,
     onFilterRollType: (type: ItemType) => void
 }
 
@@ -29,13 +35,13 @@ const StudentContextProvider = (props: Props) => {
     }, [getStudents])
     
     useEffect(() => {
-    if(data && loadState === "loaded") {
-        setStudents(data.students)
-        setStudentRoll({
-        student_roll_states: data.students.map(s => ({
-            student_id: s.id,
-            roll_state: "unmark"
-        }))
+        if(data && loadState === "loaded") {
+            setStudents(data.students)
+            setStudentRoll({
+            student_roll_states: data.students.map(s => ({
+                student_id: s.id,
+                roll_state: "unmark"
+            }))
         })
     }
     }, [loadState])
@@ -43,14 +49,52 @@ const StudentContextProvider = (props: Props) => {
     useEffect(() => {
         if(students && studentRoll) {
             setStudentDataContext({
-                //students,
+                students,
+                loadState,
                 studentRoll,
+                onSortAction,
+                onSearchAction,
                 updateStudentRoll,
                 onFilterRollType
             })
         }
-    }, [students, studentRoll])
+    }, [students, studentRoll, loadState])
 
+// Sort Action
+
+    const onSortAction = (action: "ascending" | "descending", sortType: SortType): void => {
+        const name = sortType === "First Name" ? "first_name" : "last_name"
+        if(students) {
+            const sorted = [...students].sort((a,b) => {
+                let x = a[name].toLowerCase()
+                let y = b[name].toLowerCase()
+                if (x < y) {
+                return action === "ascending" ? -1 : 1
+                }
+                if (x > y) {
+                return action === "ascending" ? 1 : -1
+                }
+                return 0;
+            })
+            setStudents(sorted)
+        }
+    }
+
+// Search Action
+
+    const onSearchAction = (value: string, isEnabled: boolean) => {
+        console.log("Search text", value)
+        if(data && isEnabled) {
+            const searchedStudents = data.students.filter(student => {
+                if (value == "") return student
+                const fullname = PersonHelper.getFullName(student).toLowerCase()
+                return fullname.includes(value.toLowerCase())
+            })
+            setStudents(searchedStudents)
+        } else if(!isEnabled) {
+            setStudents(data?.students)
+        }
+    }
 
 // Student Roll Functionality
 

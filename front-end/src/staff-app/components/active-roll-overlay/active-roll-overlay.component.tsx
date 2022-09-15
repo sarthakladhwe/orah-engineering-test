@@ -19,12 +19,8 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
   const { isActive, onItemClick } = props
   
   const studentContextData = useContext<StudentContextInterface | null>(StudentContext)
-
   const studentRoll = studentContextData && studentContextData.studentRoll
-  
   const allStudents = studentRoll ? studentRoll.student_roll_states.length : 0
-
-  console.log("context: ", studentContextData)
 
   const checkRollCount = (value: filterType): number => {
     const filteredRolls = studentRoll?.student_roll_states?.filter(student => student.roll_state === value)
