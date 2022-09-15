@@ -19,6 +19,9 @@ export const ActivityPage: React.FC = () => {
   }, [getRolls])
 
   console.log(rollData)
+  let dateString
+  if(rollData) dateString = rollData.activity[0].entity.completed_at
+  if(dateString) console.log("date", new Date(dateString).toLo)
 
   const checkRollCount = (value: filterType, studentRolls: {student_id: number, roll_state: string}[]): number => {
     const filteredRolls = studentRolls.filter(student => student.roll_state === value)
@@ -38,14 +41,14 @@ export const ActivityPage: React.FC = () => {
           <>
             {
               rollData.activity.map(act => (
-                <S.StudentRollContainer>
+                <S.StudentRollContainer key={act.entity.id} >
                   <S.RollData>
-                    <h2 style={{margin: "0"}}>
+                    <h2>
                       {act.entity.name}
                     </h2>
-                    <p>
-                      {act.entity.completed_at}
-                    </p>
+                    <S.DateContainer>
+                      {new Date(act.entity.completed_at).toLocaleDateString()}
+                    </S.DateContainer>
                   </S.RollData>
                   <S.RollContent>
                     <RollStateList
@@ -111,5 +114,9 @@ const S = {
     background-color: rgba(34, 43, 74, 0.92);
     backdrop-filter: blur(2px);
     color: #fff;
+  `,
+  DateContainer: styled.p`
+    font-size: 0.75rem;
+    font-weight: 500;
   `
 }
