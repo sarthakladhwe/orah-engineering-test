@@ -23,7 +23,6 @@ export const HomeBoardPage: React.FC = () => {
   const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" }) //context
 
   const [students, setStudents] = useState<Person[]>()  //context
-  const [studentRoll, setStudentRoll] = useState<RollInput>() //context
 
   //console.log("student data Context", studentDataContext)
 
@@ -38,39 +37,8 @@ export const HomeBoardPage: React.FC = () => {
   useEffect(() => {
     if(data && loadState === "loaded") {
       setStudents(data.students)
-      setStudentRoll({
-        student_roll_states: data.students.map(s => ({
-          student_id: s.id,
-          roll_state: "unmark"
-        }))
-      })
     }
   }, [loadState])
-
-  // Update Student Roll State
-
-  const updateStudentRoll = (student_id: number, newState: RolllStateType) => {
-    if(studentRoll?.student_roll_states.length) {
-     setStudentRoll(prevStudentRoll => {
-      if(prevStudentRoll?.student_roll_states) {
-        return {
-          student_roll_states: prevStudentRoll?.student_roll_states.map(stud => (
-            stud.student_id === student_id ? 
-            {
-              student_id: stud.student_id,
-              roll_state: newState
-            } :
-            stud
-          ))
-        }
-      }
-     })
-    }
-  }
-
-  console.log(studentRoll)
-
-  // Sort Action
 
   const onSortAction = (action: "ascending" | "descending"): void => {
     const name = sortType === "First Name" ? "first_name" : "last_name"
@@ -89,9 +57,7 @@ export const HomeBoardPage: React.FC = () => {
       setStudents(sorted)
     }
   }
-
-  // Search Action
-
+  
   const onSearchAction = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setSearchText(event.target.value)
   }
@@ -145,7 +111,7 @@ export const HomeBoardPage: React.FC = () => {
           </CenteredContainer>
         )}
 
-        {loadState === "loaded" && data?.students && students && studentRoll && (
+        {loadState === "loaded" && data?.students && students && (
           <>
             {students.map((s) => (
               <StudentListTile 
