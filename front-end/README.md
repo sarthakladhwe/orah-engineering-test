@@ -14,7 +14,7 @@ Implemented an efficient way to sort and search the list of students. Implemente
 
 Toggle 'Search' enables user to search students according to their full name.
 
-![App toolbar search](../screenshots/solution_01_toolbar_search.png.png)
+![App toolbar search](../screenshots/solution_01_toolbar_search.png)
 
 ### 2. Displaying a roll summary
 Clicking on "Start Roll" will enter the roll mode which would display a roll state icon for each student in the list. You can click on the icon to switch between "Present", "Late", "Absent" state. In this mode, you will also see a dark blue overlay shown at the bottom of the page which displays the summary of different roll states and the number of students.
