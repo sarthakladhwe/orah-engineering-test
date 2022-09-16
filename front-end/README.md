@@ -1,21 +1,10 @@
 # Front End Engineering Test
 At Orah, most of our services are written in Javascript/Typescript. New features on the web are written in React with Typescript. This project will give you an idea of the codebase you will be working with as a front end engineer at Orah.
 
-## Instructions
-This test has all the necessary components for a functional app with some missing functionality which you will need to implement, however please feel free to add any files/components you deem useful.
-
-Please fork this repo under your own github account and create a branch named `solution` once you are ready to start and commit as you would normally do under your own `solution` branch as we would love to see how you progress.
-
-### Note: Do not create Pull Request. 
-
-Share the link of the forked repository once you are finished with your `solution`.
-
 ## Approach
 My approach to the solution was to create a studentContext.tsx where student data and student roll data will be maintained. app.tsx is the Context Provider and the routes underneath it are Context Consumers (Home Board and Activity page). 
 
-This project is written in React with Typescript. However, it is not required for you to complete this test in Typescript. If this is your first time using Typescript, you can quickly (within 5 minutes) get started after reading this [guide](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html).
-
-Most of the times I've used [styled-component](https://styled-components.com/docs/basics#getting-started) for styling in this project. 
+This project is written in React with Typescript. I've used [styled-component](https://styled-components.com/docs/basics#getting-started) for styling in this project. 
 
 ## Tasks
 ### 1. Implement search and sort of students
@@ -36,9 +25,10 @@ When clicking on each roll state icon, it filters the list of students to only t
 ### 4. (BONUS) Save the current roll and display it in activity page
 After clicking on the "Complete" button, a snapshot of student roll is saved using `save-roll`. The list of rolls we have completed is fetched by calling the `get-activities` route.
 
-Each activity roll shows the number of students that were "present", "late" or "absent". By clicking on any of these roll state icon, it will load a modal UI which shows the appropriate students with that roll status.
-
 ![Activity page](../screenshots/solution_04_activity_page.png)
+
+Each activity roll shows the number of students that were "Present", "Late" or "Absent". By clicking on any of these roll state icon, it will load a modal UI which shows the appropriate students with that roll status.
+
 ![Activity student status](../screenshots/solution_04_activity_page_filter.png)
 
 ## How to run
