@@ -23,7 +23,7 @@ export const HomeBoardPage: React.FC = () => {
   const [sortType, setSortType] = useState<SortType>("First Name")
 
   if (!studentDataContext) return null;
-  const { loadState, students, studentRoll, resetStudents } = studentDataContext;
+  const { loadState, students, studentRoll, resetStudents, resetStudentsRoll } = studentDataContext;
 
   const onToolbarAction = (action: ToolbarAction) => {
     if (action === "roll") {
@@ -42,6 +42,7 @@ export const HomeBoardPage: React.FC = () => {
     } else if (action === "filter" && studentRoll && resetStudents) {
       setIsRollMode(false)
       saveRoll(studentRoll)
+      resetStudentsRoll()
       resetStudents()
     }
   }
@@ -120,15 +121,21 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
     <S.ToolbarContainer>
       <S.SortContainer>
         <S.Button onClick={() => onItemClick("sort")}>{sortType}</S.Button>
-        <S.SortIcons>
           {
             onSortAction &&
-            <>
-              <FontAwesomeIcon icon={faSortUp} onClick={() => onSortAction("descending", sortType)} style={{cursor: "pointer"}} />
-              <FontAwesomeIcon icon={faSortDown} onClick={() => onSortAction("ascending", sortType)} style={{cursor: "pointer"}} />
-            </>
+            <S.SortIcons>
+              <FontAwesomeIcon 
+                icon={faSortUp} 
+                onClick={() => onSortAction("descending", sortType)} 
+                style={{cursor: "pointer"}} 
+              />
+              <FontAwesomeIcon 
+                icon={faSortDown} 
+                onClick={() => onSortAction("ascending", sortType)} 
+                style={{cursor: "pointer"}} 
+              />
+            </S.SortIcons>
           }
-        </S.SortIcons>
       </S.SortContainer>
       <S.SearchContainer>
         {
@@ -184,6 +191,8 @@ const S = {
     align-items: center;
   `,
   SortIcons: styled.div`
-    
-  `
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  `,
 }

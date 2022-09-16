@@ -19,6 +19,7 @@ export const ActivityPage: React.FC = () => {
   const [getRolls, rollData, rollLoadState] = useApi<{ activity: Activity[] }>({ url: "get-activities" })
   const [isStudentRollActive, setIsStudentRollActive] = useState<boolean>(false)
   const [studentRollData, setStudentRollData] = useState<Person[] | null>(null)
+  const [selectedStudRollType, setSelectedStudRollType] = useState<ItemType>("all")
 
   useEffect(() => {
     void getRolls()
@@ -36,10 +37,11 @@ export const ActivityPage: React.FC = () => {
     setIsStudentRollActive(value)
   }
 
-  const selectedRollType = (value: ItemType, activity_id: number) => {
+  const selectedRollType = (rollTypeSelected: ItemType, activity_id: number) => {
+    setSelectedStudRollType(rollTypeSelected)
     if(rollData) {
       const activitySelected = rollData.activity.filter(act => act.entity.id === activity_id)[0].entity.student_roll_states
-      const studentRollState = activitySelected.filter(student => student.roll_state === value)
+      const studentRollState = activitySelected.filter(student => rollTypeSelected === "all" ? student : student.roll_state === rollTypeSelected)
       const filteredStudents = students.filter(student => {
         return studentRollState?.filter(s => s.student_id === student.id).length ? true : false
       })
@@ -103,7 +105,12 @@ export const ActivityPage: React.FC = () => {
         )}
       </S.Container>
       {studentRollData &&
-        <StudentRollOverlay isActive={isStudentRollActive} studentRollData={studentRollData} changeStudentRollActive={changeStudentRollActive} />
+        <StudentRollOverlay 
+          isActive={isStudentRollActive} 
+          studentRollData={studentRollData} 
+          changeStudentRollActive={changeStudentRollActive}
+          selectedStudRollType={selectedStudRollType}
+        />
       }
     </>
   )

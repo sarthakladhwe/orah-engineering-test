@@ -11,7 +11,8 @@ export interface StudentContextInterface {
     students: Person[],
     loadState: LoadState,
     studentRoll: RollInput,
-    resetStudents: () => void
+    resetStudents: () => void,
+    resetStudentsRoll: () => void,
     onSortAction: (action: "ascending" | "descending", sortType: SortType) => void,
     onSearchAction: (value: string, isEnabled: boolean) => void,
     updateStudentRoll: (student_id: number, newState: RolllStateType) => void,
@@ -39,12 +40,12 @@ const StudentContextProvider = (props: Props) => {
         if(data && loadState === "loaded") {
             setStudents(data.students)
             setStudentRoll({
-            student_roll_states: data.students.map(s => ({
-                student_id: s.id,
-                roll_state: "unmark"
-            }))
-        })
-    }
+                student_roll_states: data.students.map(s => ({
+                    student_id: s.id,
+                    roll_state: "unmark"
+                }))
+            })
+        }
     }, [loadState])
 
     useEffect(() => {
@@ -54,6 +55,7 @@ const StudentContextProvider = (props: Props) => {
                 loadState,
                 studentRoll,
                 resetStudents,
+                resetStudentsRoll,
                 onSortAction,
                 onSearchAction,
                 updateStudentRoll,
@@ -66,6 +68,17 @@ const StudentContextProvider = (props: Props) => {
     const resetStudents = () => {
         if(data && loadState === "loaded") {
             setStudents(data.students)
+        }
+    }
+
+    const resetStudentsRoll = () => {
+        if(data && loadState === "loaded") {
+            setStudentRoll({
+                student_roll_states: data.students.map(s => ({
+                    student_id: s.id,
+                    roll_state: "unmark"
+                }))
+            })
         }
     }
 
