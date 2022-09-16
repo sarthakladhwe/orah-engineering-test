@@ -8,9 +8,13 @@ This project is written in React with Typescript. I've used [styled-component](h
 
 ## Tasks
 ### 1. Implement search and sort of students
-Implemented an efficient way to sort and search the list of students. Implemented a sort toggle (switch between ascending or descending order) as well as a way to switch between sort by first name or last name. Toggle 'Search' enables user to search students according to their full name.
+Implemented an efficient way to sort and search the list of students. Implemented a sort toggle (switch between ascending or descending order) as well as a way to switch between sort by first name or last name.
 
 ![App tool bar](../screenshots/solution_01_toolbar.png)
+
+Toggle 'Search' enables user to search students according to their full name.
+
+![App toolbar search](../screenshots/solution_01_toolbar_search.png.png)
 
 ### 2. Displaying a roll summary
 Clicking on "Start Roll" will enter the roll mode which would display a roll state icon for each student in the list. You can click on the icon to switch between "Present", "Late", "Absent" state. In this mode, you will also see a dark blue overlay shown at the bottom of the page which displays the summary of different roll states and the number of students.
