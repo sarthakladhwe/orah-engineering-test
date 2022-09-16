@@ -25,6 +25,8 @@ export const HomeBoardPage: React.FC = () => {
   if (!studentDataContext) return null;
   const { loadState, students, studentRoll, resetStudents, resetStudentsRoll } = studentDataContext;
 
+  console.log("load State", loadState)
+
   const onToolbarAction = (action: ToolbarAction) => {
     if (action === "roll") {
       setIsRollMode(true)
@@ -49,6 +51,7 @@ export const HomeBoardPage: React.FC = () => {
 
   return (
     <>
+    {!loadState && <h1>Spin</h1>}
       <S.PageContainer>
         <Toolbar 
           onItemClick={onToolbarAction}
@@ -56,7 +59,7 @@ export const HomeBoardPage: React.FC = () => {
           sortType={sortType}
         />
 
-        {loadState === "loading" && (
+        {!loadState && (
           <CenteredContainer>
             <FontAwesomeIcon icon="spinner" size="2x" spin />
           </CenteredContainer>
