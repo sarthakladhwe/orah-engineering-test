@@ -25,8 +25,6 @@ export const HomeBoardPage: React.FC = () => {
   if (!studentDataContext) return null;
   const { loadState, students, studentRoll, resetStudents, resetStudentsRoll } = studentDataContext;
 
-  console.log("load State", loadState)
-
   const onToolbarAction = (action: ToolbarAction) => {
     if (action === "roll") {
       setIsRollMode(true)
@@ -102,8 +100,8 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
   const { onItemClick, isSearchEnabled, sortType } = props
   
   const studentDataContext = useContext<StudentContextInterface | null>(StudentContext)
-  const onSortAction = studentDataContext && studentDataContext.onSortAction
-  const onSearchAction = studentDataContext && studentDataContext.onSearchAction
+  if (!studentDataContext) return null;
+  const {onSortAction, onSearchAction} = studentDataContext
   
   const [searchText, setSearchText] = useState<string>("")
 

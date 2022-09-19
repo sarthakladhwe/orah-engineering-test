@@ -21,11 +21,7 @@ export interface StudentContextInterface {
 
 const StudentContext = createContext<StudentContextInterface | null>(null)
 
-type Props = {
-    children: any
-}
-
-const StudentContextProvider = (props: Props) => {
+const StudentContextProvider: React.FC = ({ children }) => {
 
     const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" })
     const [students, setStudents] = useState<Person[]>()
@@ -153,7 +149,7 @@ const StudentContextProvider = (props: Props) => {
 
   return (
     <StudentContext.Provider value={studentDataContext}>
-        {props.children}
+        {children}
     </StudentContext.Provider>
   )
 }
